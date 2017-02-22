@@ -31,7 +31,7 @@ namespace SimplisafeSharp.Tests
         public void SetStatusHome()
         {
             var simplisafe = new SimplisafeSharp();
-            var statusResponse = simplisafe.SetStatus(SimplisafeSharp.StatusType.Home, 91668);
+            var statusResponse = simplisafe.SetStatus(SimplisafeSharp.StatusType.Home, 0);
 
             Assert.IsNotNull(statusResponse);
         }
@@ -40,7 +40,7 @@ namespace SimplisafeSharp.Tests
         public void SetStatusAway()
         {
             var simplisafe = new SimplisafeSharp();
-            var statusResponse = simplisafe.SetStatus(SimplisafeSharp.StatusType.Away, 91668);
+            var statusResponse = simplisafe.SetStatus(SimplisafeSharp.StatusType.Away, 0);
 
             Assert.IsNotNull(statusResponse);
         }
@@ -49,7 +49,7 @@ namespace SimplisafeSharp.Tests
         public void SetStatusOff()
         {
             var simplisafe = new SimplisafeSharp();
-            var statusResponse = simplisafe.SetStatus(SimplisafeSharp.StatusType.Off, 91668);
+            var statusResponse = simplisafe.SetStatus(SimplisafeSharp.StatusType.Off, 0);
 
             Assert.IsNotNull(statusResponse);
         }
