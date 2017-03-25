@@ -2,10 +2,13 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Configuration;
+using System.Dynamic;
 using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace SimplisafeSharp
 {
@@ -15,18 +18,20 @@ namespace SimplisafeSharp
         private List<Cookie> _cookieCollection = new List<Cookie>();
         private readonly string _baseUrl = ConfigurationManager.AppSettings["SimplisafeBaseUrl"];
         private string UserId;
+        private readonly string _username = ConfigurationManager.AppSettings["SimplisafeUsername"];
+        private readonly string _password = ConfigurationManager.AppSettings["SimplisafePassword"];
 
-        public SimplisafeResponse Login(string username, string password)
+        public Login Login()
         {
-            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+            if (string.IsNullOrEmpty(_username) || string.IsNullOrEmpty(_password))
                 return null;
 
             using (var client = new CookieAwareWebClient())
             {
                 byte[] response = client.UploadValues($"{_baseUrl}login", new NameValueCollection()
                 {
-                    { "name", username },
-                    { "pass", password },
+                    { "name", _username },
+                    { "pass", _password },
                     { "device_name", "SimplisafeSharp" },
                     { "device_uuid", "" },
                     { "version", "" },
@@ -45,7 +50,7 @@ namespace SimplisafeSharp
                 if (d.return_code != 3)
                     return null;
 
-                var responseObj = new SimplisafeResponse
+                var responseObj = new Login
                 {
                     SessionId = d.session,
                     UserId = d.uid
@@ -57,7 +62,7 @@ namespace SimplisafeSharp
             }
         }
 
-        public async Task<string> GetLocations(SimplisafeResponse userData)
+        public async Task<List<Location>> GetLocations(Login userData)
         {
             try
             {
@@ -75,7 +80,28 @@ namespace SimplisafeSharp
                     result.EnsureSuccessStatusCode();
 
                     var contents = await result.Content.ReadAsStringAsync();
-                    return contents;
+
+                    var converter = new ExpandoObjectConverter();
+                    dynamic message = JsonConvert.DeserializeObject<ExpandoObject>(contents, converter);
+
+                    var locationsList = new List<Location>();
+
+                    foreach (var item in message.locations)
+                    {
+                        locationsList.Add(new Location
+                        {
+                            LocationId = int.Parse(item.Key),
+                            Address = item.Value.street1,
+                            Address2 = item.Value.street2,
+                            City = item.Value.city,
+                            State = item.Value.state,
+                            PostalCode = item.Value.postal_code,
+                            SystemState = Enum.Parse(typeof(StatusType), item.Value.system_state),
+                            SStatus = item.Value.s_status
+                        });
+                    }
+
+                    return locationsList;
 
                 }
 

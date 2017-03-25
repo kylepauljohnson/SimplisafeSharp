@@ -1,6 +1,6 @@
 ﻿namespace SimplisafeSharp
 {
-    public class SimplisafeResponse
+    public class Login
     {
         public string SessionId { get; set; }
         public int UserId { get; set; }

@@ -10,7 +10,7 @@ namespace SimplisafeSharp.Tests
         public void Login()
         {
             var simplisafe = new SimplisafeSharp();
-            var response = simplisafe.Login("johndoe@email.com", "somepassword");
+            var response = simplisafe.Login();
 
             Assert.IsNotNull(response);
             Assert.IsNotEmpty(response.SessionId);
@@ -21,7 +21,7 @@ namespace SimplisafeSharp.Tests
         public void GetLocations()
         {
             var simplisafe = new SimplisafeSharp();
-            var response = simplisafe.Login("johndoe@email.com", "somepassword");
+            var response = simplisafe.Login();
             var locations = simplisafe.GetLocations(response) ;
 
             Assert.IsNotNull(locations);
